@@ -1,6 +1,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+const getAiClient = () => {
+  if (!ai) {
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+};
 
 const langMap: { [key: string]: string } = {
   en: 'English',
@@ -39,7 +46,8 @@ export const getAdvice = async (ageGroup: string, topic: string, language: strin
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
@@ -73,7 +81,8 @@ export const getBmiAdvice = async (ageGroup: string, weight: number, height: num
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
@@ -95,7 +104,8 @@ export const getQuickTip = async (ageGroup: string, language: string): Promise<{
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: 'gemini-2.5-flash-lite',
       contents: prompt,
       config: {
@@ -161,7 +171,8 @@ export const getAssistantResponse = async (prompt: string, images: string[], lan
   `;
   
   try {
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model,
       contents: { parts },
       config: {
