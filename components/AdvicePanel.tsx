@@ -167,6 +167,20 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
   const parsedBmiAdvice = useMemo(() => bmiAdvice ? parseBmiAdvice(bmiAdvice) : null, [bmiAdvice]);
   const parsedGeneralAdvice = useMemo(() => advice ? parseGeneralAdvice(advice) : null, [advice]);
   const chartRecords = useMemo(() => [...healthRecords].reverse(), [healthRecords]);
+  
+  const bmiAdviceToShare = useMemo(() => {
+    if (!parsedBmiAdvice) return '';
+    const { assessment, tips, disclaimer } = parsedBmiAdvice;
+    const formattedTips = tips.map(tip => `• ${tip.text}`).join('\n');
+    return [assessment, formattedTips, disclaimer].filter(Boolean).join('\n\n');
+  }, [parsedBmiAdvice]);
+
+  const adviceToShare = useMemo(() => {
+    if (!parsedGeneralAdvice) return '';
+    const { introduction, tips, closing } = parsedGeneralAdvice;
+    const formattedTips = tips.map(tip => `• ${tip.text}`).join('\n');
+    return [introduction, formattedTips, closing].filter(Boolean).join('\n\n');
+  }, [parsedGeneralAdvice]);
 
   const handleActionClick = () => {
     if (!topic) return;
@@ -213,12 +227,6 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
 
   const renderHealthTracker = () => {
     const healthColors = colorClasses['emerald'];
-    const bmiAdviceToShare = useMemo(() => {
-        if (!parsedBmiAdvice) return '';
-        const { assessment, tips, disclaimer } = parsedBmiAdvice;
-        const formattedTips = tips.map(tip => `• ${tip.text}`).join('\n');
-        return [assessment, formattedTips, disclaimer].filter(Boolean).join('\n\n');
-    }, [parsedBmiAdvice]);
     
     return (
     <div className="space-y-4">
@@ -357,13 +365,6 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
   }
 
   const renderAdviceCard = () => {
-    const adviceToShare = useMemo(() => {
-        if (!parsedGeneralAdvice) return '';
-        const { introduction, tips, closing } = parsedGeneralAdvice;
-        const formattedTips = tips.map(tip => `• ${tip.text}`).join('\n');
-        return [introduction, formattedTips, closing].filter(Boolean).join('\n\n');
-    }, [parsedGeneralAdvice]);
-    
     if (isLoading) {
       return (
         <div className="flex justify-center items-center h-full">
